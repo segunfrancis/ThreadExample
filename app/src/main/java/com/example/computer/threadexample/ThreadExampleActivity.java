@@ -18,27 +18,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ThreadExampleActivity extends AppCompatActivity {
 
     // Variable Declarations
     int progressStatus, red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lime;
-    TextView textView2, myTextView;
-    Button buttonClick, buttonClick2;
-    ProgressBar progressBar;
-    CardView cardView;
+    @BindView(R.id.textView) TextView myTextView;
+    @BindView(R.id.textView2) TextView textView2;
+    @BindView(R.id.button) Button buttonClick;
+    @BindView(R.id.button2) Button buttonClick2;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
+    @BindView(R.id.card_view) CardView cardView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thread_example);
 
-        // Attaching Variables to their corresponding Views
-        myTextView = findViewById(R.id.textView);
-        textView2 = findViewById(R.id.textView2);
-        buttonClick = findViewById(R.id.button);
-        buttonClick2 = findViewById(R.id.button2);
-        progressBar = findViewById(R.id.progressBar);
-        cardView = findViewById(R.id.card_view);
+        ButterKnife.bind(this);
 
         // Getting colour resources
         red = getResources().getColor(R.color.colorRed);
