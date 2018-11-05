@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -21,10 +20,9 @@ import java.util.Random;
 public class ThreadExampleActivity extends AppCompatActivity {
 
     // Variable Declarations
-    int progressStatus, red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lime;
-    TextView textView2, myTextView;
-    Button buttonClick, buttonClick2;
-    ProgressBar progressBar;
+    int red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lime;
+    TextView dateTextView;
+    Button displayDateButton, colorChangeButton;
     CardView cardView;
 
     @Override
@@ -33,11 +31,9 @@ public class ThreadExampleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_thread_example);
 
         // Attaching Variables to their corresponding Views
-        myTextView = findViewById(R.id.textView);
-        textView2 = findViewById(R.id.textView2);
-        buttonClick = findViewById(R.id.button);
-        buttonClick2 = findViewById(R.id.button2);
-        progressBar = findViewById(R.id.progressBar);
+        dateTextView = findViewById(R.id.date_textView);
+        displayDateButton = findViewById(R.id.show_date_button);
+        colorChangeButton = findViewById(R.id.color_change_button);
         cardView = findViewById(R.id.card_view);
 
         // Getting colour resources
@@ -54,7 +50,7 @@ public class ThreadExampleActivity extends AppCompatActivity {
         lime = getResources().getColor(R.color.colorLime);
 
         // Setting an OnClickListener on the button that changes the background colour of the cardView
-        buttonClick2.setOnClickListener(new View.OnClickListener() {
+        colorChangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<Integer> colorList = Arrays.asList(red, pink, purple, deepPurple, indigo, blue, lightBlue, cyan, teal, green, lime);
@@ -64,14 +60,9 @@ public class ThreadExampleActivity extends AppCompatActivity {
             }
         });
 
-        // Setting an OnClickListener on the button that shows the Time and Date
-        buttonClick.setOnClickListener(new View.OnClickListener() {
+        displayDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                textView2.setVisibility(View.VISIBLE);
-                progressStatus = 0;
-
                 // Creating the Background Thread to enable task run in background
                 class BackgroundThread extends Thread {
                     @Override
@@ -82,23 +73,12 @@ public class ThreadExampleActivity extends AppCompatActivity {
                         String dateString = dateFormat.format(new Date());
                         bundle.putString("myKey", dateString);
                         message.setData(bundle);
-                        while (progressStatus < 10) {
-                            progressStatus++;
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setProgress(progressStatus);
-                                    textView2.setText("Progress: " + progressStatus + "/" + progressBar.getMax());
-                                }
-                            });
 
-                            // This would cause a 1 second delay for every increase in progressStatus
-                            // This would result in a total delay of 10 seconds since progressStatus runs from 0 - 10
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                        // Putting the UI thread to sleep for 20 seconds
+                        try {
+                            Thread.sleep(20000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                         handler.sendMessage(message);
                     }
@@ -109,7 +89,6 @@ public class ThreadExampleActivity extends AppCompatActivity {
         });
     }
 
-
     // Handling the Thread
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -117,35 +96,7 @@ public class ThreadExampleActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
             String newString = bundle.getString("myKey");
-            myTextView.setText(newString);
-            ProgressBar progressBar = findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.INVISIBLE);
-            textView2.setVisibility(View.INVISIBLE);
+            dateTextView.setText(newString);
         }
     };
 }
-
-    /**Alternatively; create a Runnable*/
-    /**Runnable runnable = new Runnable() {
-        public void run() {
-
-            long endTime = System.currentTimeMillis() +
-                    20 * 1000;
-
-            while (System.currentTimeMillis() < endTime) {
-                synchronized (this) {
-                    try {
-                        wait(endTime -
-                                System.currentTimeMillis());
-                    } catch (Exception e) {
-                    }
-                }
-
-            }
-            handler.sendEmptyMessage(0);
-        }
-    };
-
-    Thread mythread = new Thread(runnable);
-      mythread.start();
-      }*/
